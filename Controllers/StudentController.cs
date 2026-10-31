@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WebApiPractice.DTOs;
+using WebApiPractice.Models;
 using WebApiPractice.Services;
 
 namespace WebApiPractice.Controllers;
@@ -132,4 +134,31 @@ public class StudentController : ControllerBase
 
         return NoContent();
     }
+    [HttpGet("search")]
+public async Task<ActionResult<List<StudentDto>>> SearchStudents(
+
+    [FromQuery] string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            return BadRequest("Search term is required.");
+
+        var students = await _studentService.SearchStudentsByNameAsync(key);
+
+
+        return Ok(students);
+
+    }
+    [HttpGet("department")]
+    public async Task<ActionResult<List<StudentDto>>> GetStudentsByDepartment(
+    [FromQuery] int departmentId)
+    {
+        if (departmentId <= 0)
+            return BadRequest("Department ID must be greater than zero.");
+
+        var students = await _studentService
+            .GetStudentsByDepartmentIdAsync(departmentId);
+
+        return Ok(students);
+    }
+    
 }
