@@ -27,8 +27,6 @@ public class StudentRepository : IStudentRepository
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
-
-
     public async Task<bool> EmailExistsAsync(
         string email,
         int? excludeStudentId = null)
@@ -54,5 +52,38 @@ public class StudentRepository : IStudentRepository
     {
         _context.Students.Remove(student);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Student>> SearchByNameAsync(string search)
+    {
+        return await _context.Students
+            .Include(s => s.Department)
+            .Where(s => s.Name.Contains(search))
+            .ToListAsync();
+    }
+
+    public async Task<List<Student>> GetByDepartmentIdAsync(int departmentId)
+    {
+        return await _context.Students
+            .Include(s => s.Department)
+            .Where(s => s.DepartmentId == departmentId)
+            .ToListAsync();
+    }
+
+    public async Task<List<Student>> GetPagedAsync(
+        int pageNumber,
+        int pageSize)
+    {
+        return await _context.Students
+            .Include(s => s.Department)
+            .OrderBy(s => s.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<int> GetTotalCountAsync()
+    {
+        return await _context.Students.CountAsync();
     }
 }
