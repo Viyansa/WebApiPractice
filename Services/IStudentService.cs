@@ -1,4 +1,5 @@
 ﻿using WebApiPractice.DTOs;
+using WebApiPractice.Models;
 
 namespace WebApiPractice.Services;
 
@@ -15,4 +16,5 @@ public interface IStudentService
     Task<bool> DeleteStudentAsync(int id);
 
     Task<bool> EmailExistsAsync(string email, int? excludeStudentId = null);
+    Task<List<StudentDto>> SearchStudentsByNameAsync(string search);
 }
